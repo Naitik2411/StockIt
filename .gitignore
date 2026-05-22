@@ -1,0 +1,48 @@
+# Node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# Turbo
+.turbo/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Go
+bin/
+dist/
+*.exe
+*.test
+*.out
+
+# Air
+tmp/
+
+# Coverage
+coverage/
+coverage.out
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Build
+build/
+
+# Next.js
+.next/
+out/
+
+# Mac/Linux
+*.swp
