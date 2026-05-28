@@ -1,6 +1,6 @@
 module github.com/Naitik2411/go-production
 
-go 1.26.2
+go 1.26
 
 require (
 	github.com/go-playground/validator/v10 v10.30.2
@@ -25,8 +25,15 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
+	github.com/newrelic/go-agent/v3 v3.43.3 // indirect
+	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.2 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/crypto v0.49.0 // indirect
+	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/text v0.35.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260120221211-b8f7ae30c516 // indirect
+	google.golang.org/grpc v1.80.0 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 )
