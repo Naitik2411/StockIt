@@ -12,8 +12,12 @@
     "typecheck": "turbo run typecheck",
     "clean": "turbo run clean && rm -rf node_modules"
   },
+  "packageManager": "npm@10.0.0",
   "devDependencies": {
     "turbo": "^2.9.14",
     "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@react-email/ui": "^6.5.0"
   }
 }

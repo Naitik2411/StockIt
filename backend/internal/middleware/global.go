@@ -98,7 +98,7 @@ func (global *GlobalMiddlewares) Secure() echo.MiddlewareFunc {
 	return middleware.Secure()
 }
 
-func (global *GlobalMiddlewares) GlobalErrorHandler(err error, c *echo.Context) {
+func (global *GlobalMiddlewares) GlobalErrorHandler(c *echo.Context, err error) {
 	// First try to handle database errors and convert them to appropriate HTTP errors
 	originalErr := err
 
