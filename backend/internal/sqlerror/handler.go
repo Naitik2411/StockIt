@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	errorss "github.com/Naitik2411/go-production/internal/errors"
+	errorss "github.com/Naitik2411/stockit/internal/errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"

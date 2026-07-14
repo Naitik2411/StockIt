@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/Naitik2411/go-production/internal/config"
-	"github.com/Naitik2411/go-production/internal/lib/email"
+	"github.com/Naitik2411/stockit/internal/config"
+	"github.com/Naitik2411/stockit/internal/lib/email"
 	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog"
 )

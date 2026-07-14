@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	config "github.com/Naitik2411/go-production/internal/config"
-	loggerpkg "github.com/Naitik2411/go-production/internal/logger"
+	config "github.com/Naitik2411/stockit/internal/config"
+	loggerpkg "github.com/Naitik2411/stockit/internal/logger"
 
 	pgxzero "github.com/jackc/pgx-zerolog"
 	"github.com/jackc/pgx/v5"

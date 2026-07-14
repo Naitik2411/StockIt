@@ -3,10 +3,10 @@ package router
 import (
 	"net/http"
 
-	"github.com/Naitik2411/go-production/internal/handler"
-	"github.com/Naitik2411/go-production/internal/middleware"
-	"github.com/Naitik2411/go-production/internal/server"
-	"github.com/Naitik2411/go-production/internal/service"
+	"github.com/Naitik2411/stockit/internal/handler"
+	"github.com/Naitik2411/stockit/internal/middleware"
+	"github.com/Naitik2411/stockit/internal/server"
+	"github.com/Naitik2411/stockit/internal/service"
 	"github.com/labstack/echo/v5"
 	echoMiddleware "github.com/labstack/echo/v5/middleware"
 )
@@ -53,7 +53,8 @@ func NewRouter(s *server.Server, h *handler.Handlers, services *service.Services
 	registerSystemRoutes(router, h)
 
 	// register versioned routes
-	router.Group("/api/v1")
-
+	v1 := router.Group("/api/v1")
+	registerAuthRoutes(v1, h, middlewares.Auth)
+	registerStockRoutes(v1, h)
 	return router
 }

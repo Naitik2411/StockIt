@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/Naitik2411/go-production/internal/server"
+	"github.com/Naitik2411/stockit/internal/server"
 )
 
 type RateLimitMiddleware struct {

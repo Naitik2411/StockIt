@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/Naitik2411/go-production/internal/handler"
+	"github.com/Naitik2411/stockit/internal/handler"
 
 	"github.com/labstack/echo/v5"
 )

@@ -1,9 +1,15 @@
 package repository
 
-import "github.com/Naitik2411/go-production/internal/server"
+import "github.com/Naitik2411/stockit/internal/server"
 
-type Repositories struct{}
+type Repositories struct {
+	User  *UserRepository
+	Stock *StockRepository
+}
 
 func NewRepositories(s *server.Server) *Repositories {
-	return &Repositories{}
+	return &Repositories{
+		User:  NewUserRepository(s),
+		Stock: NewStockRepository(s),
+	}
 }

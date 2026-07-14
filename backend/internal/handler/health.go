@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Naitik2411/go-production/internal/middleware"
-	"github.com/Naitik2411/go-production/internal/server"
+	"github.com/Naitik2411/stockit/internal/middleware"
+	"github.com/Naitik2411/stockit/internal/server"
 
 	"github.com/labstack/echo/v5"
 )

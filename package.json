@@ -1,5 +1,5 @@
 {
-  "name": "go-production",
+  "name": "stockit",
   "private": true,
   "workspaces": [
     "apps/*",

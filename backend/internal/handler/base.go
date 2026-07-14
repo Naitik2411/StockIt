@@ -3,9 +3,9 @@ package handler
 import (
 	"time"
 
-	"github.com/Naitik2411/go-production/internal/middleware"
-	"github.com/Naitik2411/go-production/internal/server"
-	"github.com/Naitik2411/go-production/internal/validation"
+	"github.com/Naitik2411/stockit/internal/middleware"
+	"github.com/Naitik2411/stockit/internal/server"
+	"github.com/Naitik2411/stockit/internal/validation"
 	"github.com/labstack/echo/v5"
 	"github.com/newrelic/go-agent/v3/newrelic"
 )

@@ -46,3 +46,6 @@ out/
 
 # Mac/Linux
 *.swp
+
+# Personal build guide (local only)
+helper.md

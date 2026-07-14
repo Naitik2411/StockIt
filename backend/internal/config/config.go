@@ -50,7 +50,12 @@ type RedisConfig struct {
 }
 
 type IntegrationConfig struct {
-	ResendAPIKey string `koanf:"resend_api_key" validate:"required"`
+	ResendAPIKey        string `koanf:"resend_api_key" validate:"required"`
+	AlphaVantageKey     string `koanf:"alpha_vantage_key"`
+	PriceSyncInterval   int    `koanf:"price_sync_interval"`
+	LeaderboardCacheTTL int    `koanf:"leaderboard_cache_ttl"`
+	StartingBalance     int    `koanf:"starting_balance"`
+	MarketTimezone      string `koanf:"market_timezone"`
 }
 
 type AuthConfig struct {

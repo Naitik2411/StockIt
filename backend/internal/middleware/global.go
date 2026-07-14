@@ -3,9 +3,9 @@ package middleware
 import (
 	"net/http"
 
-	errorss "github.com/Naitik2411/go-production/internal/errors"
-	"github.com/Naitik2411/go-production/internal/server"
-	"github.com/Naitik2411/go-production/internal/sqlerror"
+	errorss "github.com/Naitik2411/stockit/internal/errors"
+	"github.com/Naitik2411/stockit/internal/server"
+	"github.com/Naitik2411/stockit/internal/sqlerror"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/pkg/errors"

@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Naitik2411/go-production/internal/config"
-	"github.com/Naitik2411/go-production/internal/database"
-	"github.com/Naitik2411/go-production/internal/lib/job"
-	"github.com/Naitik2411/go-production/internal/logger"
+	"github.com/Naitik2411/stockit/internal/cache"
+	"github.com/Naitik2411/stockit/internal/config"
+	"github.com/Naitik2411/stockit/internal/database"
+	"github.com/Naitik2411/stockit/internal/lib/job"
+	"github.com/Naitik2411/stockit/internal/logger"
 	"github.com/newrelic/go-agent/v3/integrations/nrredis-v9"
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
@@ -24,9 +25,11 @@ type Server struct {
 	Redis         *redis.Client
 	httpServer    *http.Server
 	Job           *job.JobService
+	Cache         *cache.Cache
 }
 
 func New(cfg *config.Config, logger *zerolog.Logger, loggerService *logger.LoggerService) (*Server, error) {
+
 	db, err := database.New(cfg, logger, loggerService)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize database: %w", err)
@@ -55,10 +58,12 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *logger.Logge
 	jobService := job.NewJobService(logger, cfg)
 	jobService.InitHandlers(cfg, logger)
 
-	// Start job server
-	if err := jobService.Start(); err != nil {
-		return nil, err
-	}
+	// Start job server in background — asynq Start() blocks
+	go func() {
+		if err := jobService.Start(); err != nil {
+			logger.Error().Err(err).Msg("background job server failed")
+		}
+	}()
 
 	server := &Server{
 		Config:        cfg,

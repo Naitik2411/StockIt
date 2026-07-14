@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Naitik2411/go-production/internal/server"
+	"github.com/Naitik2411/stockit/internal/server"
 
 	"github.com/labstack/echo/v5"
 )

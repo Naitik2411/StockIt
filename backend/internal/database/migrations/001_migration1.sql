@@ -1,6 +1,6 @@
--- Write your migrate up statements here
+-- Bootstrap migration: enable UUID generation for future schema
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 ---- create above / drop below ----
 
--- Write your migrate down statements here. If this migration is irreversible
--- Then delete the separator line above.
+DROP EXTENSION IF EXISTS "pgcrypto";

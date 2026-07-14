@@ -19,9 +19,9 @@ tasks:
     internal: true
 
   run:
-    desc: run the cmd/go-production application
+    desc: run the cmd/stockit application
     cmds:
-    - go run ./cmd/go-production
+    - go run ./cmd/stockit
 
   migrations:new:
     desc: create a new database migration

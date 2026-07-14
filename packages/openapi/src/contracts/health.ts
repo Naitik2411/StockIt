@@ -1,5 +1,5 @@
 import { initContract } from "@ts-rest/core";
-import { ZHealthResponse } from "@production/zod";
+import { ZHealthResponse } from "@stockit/zod";
 
 const c = initContract();
 

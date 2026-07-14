@@ -1,5 +1,5 @@
 {
-  "name": "@production/openapi",
+  "name": "@stockit/openapi",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@anatine/zod-openapi": "^2.2.6",
-    "@production/zod": "*",
+    "@stockit/zod": "*",
     "@ts-rest/core": "^3.52.0",
     "@ts-rest/open-api": "^3.52.0",
     "ts-pattern": "^5.6.0",

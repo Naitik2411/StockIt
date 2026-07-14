@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/newrelic/go-agent/v3/newrelic"
 
-	"github.com/Naitik2411/go-production/internal/server"
+	"github.com/Naitik2411/stockit/internal/server"
 )
 
 type TracingMiddleware struct {
