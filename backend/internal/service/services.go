@@ -16,7 +16,7 @@ func NewServices(s *server.Server, repos *repository.Repositories) (*Services, e
 
 	return &Services{
 		Job:   s.Job,
-		Auth:  NewAuthService(s, repos.User),
+		Auth:  NewAuthService(s, repos.User, repos.Portfolio),
 		Stock: NewStockService(s),
 	}, nil
 }

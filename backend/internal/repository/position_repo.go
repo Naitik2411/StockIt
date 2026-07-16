@@ -9,6 +9,7 @@ import (
 	"github.com/Naitik2411/stockit/internal/server"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/shopspring/decimal"
 )
 
 type PositionRepository struct {
@@ -55,7 +56,36 @@ func (r *PositionRepository) ListByPortfolio(ctx context.Context, portfolioID uu
 	return positions, nil
 }
 
-// func (r *PositionRepository) UpsertBuy(ctx context.Context, tx pgx.Tx, portfolioID uuid.UUID, ticker string, shares, price decimal.Decimal)error{
+func (r *PositionRepository) UpsertBuy(ctx context.Context, tx pgx.Tx, portfolioID uuid.UUID, ticker string, shares, price decimal.Decimal) error {
 
-// 	query := `INSERT into positions ()`
-// }
+	query := `INSERT into positions (portfolio_id, ticker, shares, avg_buy_price) VALUES ($1, $2, $3, $4)
+	ON CONFLICT (portfolio_id, ticker) DO UPDATE SET shares = position.shares+EXCLUDED.shares,
+	avg_buy_price = (
+				(positions.shares * positions.avg_buy_price) + (EXCLUDED.shares * EXCLUDED.avg_buy_price)
+			) / (positions.shares + EXCLUDED.shares),
+			updated_at = now()
+	`
+	_, err := tx.Exec(ctx, query, portfolioID, ticker, shares, price)
+	if err != nil {
+		return fmt.Errorf("upsert any positions : %w", err)
+	}
+	return nil
+}
+
+func (r *PositionRepository) UpdateShares(ctx context.Context, tx pgx.Tx, positionID uuid.UUID, newShares decimal.Decimal) error {
+	_, err := tx.Exec(ctx, `
+		UPDATE positions SET shares = $1, updated_at = now() WHERE id = $2
+	`, newShares, positionID)
+	if err != nil {
+		return fmt.Errorf("update shares: %w", err)
+	}
+	return nil
+}
+
+func (r *PositionRepository) Delete(ctx context.Context, tx pgx.Tx, positionID uuid.UUID) error {
+	_, err := tx.Exec(ctx, `DELETE FROM positions WHERE id = $1`, positionID)
+	if err != nil {
+		return fmt.Errorf("delete position: %w", err)
+	}
+	return nil
+}
