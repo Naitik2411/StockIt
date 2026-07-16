@@ -125,7 +125,7 @@ func (s *PortfolioService) Sell(ctx context.Context, userID uuid.UUID, ticker st
 	if err != nil {
 		if errors.Is(err, errorss.ErrTickerNotFound) {
 			code := "TICKER_NOT_FOUND"
-			return errorss.NewBadRequestError("ticker not found or not yet synced", false, &code, nil, nil)
+			return errorss.NewNotFoundError("ticker not found or not yet synced", false, &code)
 		}
 		return err
 	}
@@ -151,7 +151,7 @@ func (s *PortfolioService) Sell(ctx context.Context, userID uuid.UUID, ticker st
 		return err
 	}
 	if position == nil {
-		code := "IPOSITION_NOT_FOUND"
+		code := "POSITION_NOT_FOUND"
 		return errorss.NewNotFoundError("position not found", false, &code)
 	}
 	if position.Shares.LessThan(shares) {

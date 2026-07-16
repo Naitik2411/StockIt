@@ -82,6 +82,7 @@ func main() {
 		appLogger.Fatal().Err(err).Msg("server failed")
 	case sig := <-quit:
 		appLogger.Info().Str("signal", sig.String()).Msg("shutdown signal received")
+		cancel()
 	}
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)

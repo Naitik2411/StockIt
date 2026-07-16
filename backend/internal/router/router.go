@@ -56,5 +56,6 @@ func NewRouter(s *server.Server, h *handler.Handlers, services *service.Services
 	v1 := router.Group("/api/v1")
 	registerAuthRoutes(v1, h, middlewares.Auth)
 	registerStockRoutes(v1, h)
+	registerPortfolioRoutes(v1, h, middlewares.Auth)
 	return router
 }

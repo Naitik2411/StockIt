@@ -17,9 +17,15 @@ func NewStockRepository(s *server.Server) *StockRepository {
 }
 
 func (r *StockRepository) Upsert(ctx context.Context, stock *model.Stock) error {
-	query := `INSERT INTO stocks (ticker, name, current_price, price_change_pct, last_synced_at)
-		VALUES ($1, $2, $3, $4, $5) ON CONFLICT (ticker) DO UPDATE SET name = EXCLUDED.name, current_price=EXCLUDED.CURRENT_PRICE
-		price_change_pct=EXCLUDED.price_change_pct, last_synced_at = EXCLUDED.last_synced_at`
+	query := `
+		INSERT INTO stocks (ticker, name, current_price, price_change_pct, last_synced_at)
+		VALUES ($1, $2, $3, $4, $5)
+		ON CONFLICT (ticker) DO UPDATE SET
+			name = EXCLUDED.name,
+			current_price = EXCLUDED.current_price,
+			price_change_pct = EXCLUDED.price_change_pct,
+			last_synced_at = EXCLUDED.last_synced_at
+	`
 	_, err := r.server.DB.Pool.Exec(ctx, query, stock.Ticker,
 		stock.Name,
 		stock.CurrentPrice,

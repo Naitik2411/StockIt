@@ -58,9 +58,12 @@ func (r *PositionRepository) ListByPortfolio(ctx context.Context, portfolioID uu
 
 func (r *PositionRepository) UpsertBuy(ctx context.Context, tx pgx.Tx, portfolioID uuid.UUID, ticker string, shares, price decimal.Decimal) error {
 
-	query := `INSERT into positions (portfolio_id, ticker, shares, avg_buy_price) VALUES ($1, $2, $3, $4)
-	ON CONFLICT (portfolio_id, ticker) DO UPDATE SET shares = position.shares+EXCLUDED.shares,
-	avg_buy_price = (
+	query := `
+		INSERT INTO positions (portfolio_id, ticker, shares, avg_buy_price)
+		VALUES ($1, $2, $3, $4)
+		ON CONFLICT (portfolio_id, ticker) DO UPDATE SET
+			shares = positions.shares + EXCLUDED.shares,
+			avg_buy_price = (
 				(positions.shares * positions.avg_buy_price) + (EXCLUDED.shares * EXCLUDED.avg_buy_price)
 			) / (positions.shares + EXCLUDED.shares),
 			updated_at = now()

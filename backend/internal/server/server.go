@@ -72,6 +72,7 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *logger.Logge
 		DB:            db,
 		Redis:         redisClient,
 		Job:           jobService,
+		Cache:         cache.New(redisClient),
 	}
 
 	// Start metrics collection
