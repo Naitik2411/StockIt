@@ -57,5 +57,6 @@ func NewRouter(s *server.Server, h *handler.Handlers, services *service.Services
 	registerAuthRoutes(v1, h, middlewares.Auth)
 	registerStockRoutes(v1, h)
 	registerPortfolioRoutes(v1, h, middlewares.Auth)
+	registerLeaderboardRoutes(v1, h, middlewares.Auth)
 	return router
 }

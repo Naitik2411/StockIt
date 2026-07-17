@@ -59,3 +59,23 @@ func (r *PortfolioRepository) UpdateCash(ctx context.Context, tx pgx.Tx, portfol
 	}
 	return nil
 }
+
+func (r *PortfolioRepository) ListAll(ctx context.Context) ([]model.Portfolio, error) {
+	query := `SELECT id, user_id, cash_balance, season_id, created_at FROM portfolios ORDER BY created_at ASC`
+
+	rows, err := r.server.DB.Pool.Query(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("list all potfolios : %w", err)
+	}
+
+	defer rows.Close()
+	var portfolios []model.Portfolio
+	for rows.Next() {
+		var p model.Portfolio
+		if err := rows.Scan(&p.ID, &p.UserID, &p.CashBalance, &p.SeasonID, &p.CreatedAt); err != nil {
+			return nil, fmt.Errorf("scan portfolio : %w", err)
+		}
+		portfolios = append(portfolios, p)
+	}
+	return portfolios, nil
+}
