@@ -35,7 +35,8 @@ func (h *HealthHandler) CheckHealth(c *echo.Context) error {
 		"checks":      make(map[string]interface{}),
 	}
 
-	checks := response["checks"].(map[string]interface{})
+	checks := make(map[string]interface{})
+	response["checks"] = checks
 	isHealthy := true
 
 	// Check database connectivity

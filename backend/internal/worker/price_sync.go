@@ -10,6 +10,7 @@ import (
 	"github.com/Naitik2411/stockit/internal/model"
 	"github.com/Naitik2411/stockit/internal/repository"
 	"github.com/Naitik2411/stockit/internal/server"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog"
 	"github.com/shopspring/decimal"
 )
@@ -62,6 +63,14 @@ func (w *PriceSyncWorker) Start(ctx context.Context) {
 }
 
 func (w *PriceSyncWorker) sync(ctx context.Context) {
+	if w.server.LoggerService != nil {
+		if app := w.server.LoggerService.GetApplication(); app != nil {
+			txn := app.StartTransaction("PriceSyncWorker/sync")
+			defer txn.End()
+			ctx = newrelic.NewContext(ctx, txn)
+		}
+	}
+
 	sem := make(chan struct{}, 5)
 	var wg sync.WaitGroup
 
@@ -71,7 +80,7 @@ func (w *PriceSyncWorker) sync(ctx context.Context) {
 			defer wg.Done()
 			defer func() {
 				if r := recover(); r != nil {
-					w.log.Error().Interface("panic", r).Str("ticker", ticker)
+					w.log.Error().Interface("panic", r).Str("ticker", ticker).Msg("panic during price sync")
 				}
 			}()
 			sem <- struct{}{}
@@ -86,6 +95,10 @@ func (w *PriceSyncWorker) sync(ctx context.Context) {
 
 func (w *PriceSyncWorker) syncTicker(ctx context.Context, ticker string) {
 	start := time.Now()
+	if txn := newrelic.FromContext(ctx); txn != nil {
+		segment := txn.StartSegment("price-sync")
+		defer segment.End()
+	}
 
 	price, changePct, err := w.client.GetQuote(ctx, ticker)
 	if err != nil {

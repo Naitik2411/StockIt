@@ -3,6 +3,7 @@ module github.com/Naitik2411/stockit
 go 1.26
 
 require (
+	github.com/alicebob/miniredis/v2 v2.38.0
 	github.com/clerk/clerk-sdk-go/v2 v2.6.0
 	github.com/go-playground/validator/v10 v10.30.2
 	github.com/google/uuid v1.6.0
@@ -52,6 +53,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
+	github.com/yuin/gopher-lua v1.1.1 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/crypto v0.52.0 // indirect
 	golang.org/x/net v0.54.0 // indirect

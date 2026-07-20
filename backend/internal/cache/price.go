@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -33,7 +34,7 @@ func (c *Cache) SetPrice(ctx context.Context, ticker string, price StockPrice) e
 	}
 	key := priceKey(ticker)
 	if err := c.redis.Set(ctx, key, data, 0).Err(); err != nil {
-		return fmt.Errorf("Redis Set : %w", err)
+		return fmt.Errorf("redis set: %w", err)
 	}
 	return nil
 }
@@ -43,7 +44,7 @@ func (c *Cache) GetPrice(ctx context.Context, ticker string) (StockPrice, error)
 
 	data, err := c.redis.Get(ctx, key).Bytes()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			return StockPrice{}, errorss.ErrTickerNotFound
 		}
 		return StockPrice{}, fmt.Errorf("redis get: %w", err)

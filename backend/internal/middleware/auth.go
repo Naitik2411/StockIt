@@ -62,7 +62,7 @@ func (auth *AuthMiddleware) RequireAuth(next echo.HandlerFunc) echo.HandlerFunc 
 
 		c.Set("user_id", claims.Subject)
 		c.Set("user_role", claims.ActiveOrganizationRole)
-		c.Set("permissions", claims.Claims.ActiveOrganizationPermissions)
+		c.Set("permissions", claims.ActiveOrganizationPermissions)
 
 		auth.server.Logger.Info().
 			Str("function", "RequireAuth").

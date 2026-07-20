@@ -3,6 +3,7 @@ package handler
 import (
 	"time"
 
+	errorss "github.com/Naitik2411/stockit/internal/errors"
 	"github.com/Naitik2411/stockit/internal/middleware"
 	"github.com/Naitik2411/stockit/internal/server"
 	"github.com/Naitik2411/stockit/internal/validation"
@@ -63,7 +64,10 @@ type FileResponseHandler struct {
 }
 
 func (h FileResponseHandler) Handle(c *echo.Context, result interface{}) error {
-	data := result.([]byte)
+	data, ok := result.([]byte)
+	if !ok {
+		return errorss.NewInternalServerError()
+	}
 	c.Response().Header().Set("Content-Disposition", "attachment; filename="+h.filename)
 	return c.Blob(h.status, h.contentType, data)
 }

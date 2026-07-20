@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,7 +33,7 @@ func (c *Cache) SetLeaderboard(ctx context.Context, entries []model.LeaderboardE
 func (c *Cache) GetLeaderboard(ctx context.Context) ([]model.LeaderboardEntry, error) {
 	data, err := c.redis.Get(ctx, leaderboardKey).Bytes()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			return nil, nil // cache miss — not an error
 		}
 		return nil, fmt.Errorf("redis get leaderboard: %w", err)

@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"regexp"
@@ -48,38 +49,44 @@ func validateStruct(v Validatable) (string, []errorss.FieldError) {
 
 func extractValidationErrors(err error) (string, []errorss.FieldError) {
 	var fieldErrors []errorss.FieldError
-	validationErrors, ok := err.(validator.ValidationErrors)
-	if !ok {
-		customValidationErrors := err.(CustomValidationErrors)
-		for _, err := range customValidationErrors {
+
+	var customValidationErrors CustomValidationErrors
+	if errors.As(err, &customValidationErrors) {
+		for _, cerr := range customValidationErrors {
 			fieldErrors = append(fieldErrors, errorss.FieldError{
-				Field: err.Field,
-				Error: err.Message,
+				Field: cerr.Field,
+				Error: cerr.Message,
 			})
 		}
+		return "Validation failed", fieldErrors
 	}
 
-	for _, err := range validationErrors {
-		field := strings.ToLower(err.Field())
+	var validationErrors validator.ValidationErrors
+	if !errors.As(err, &validationErrors) {
+		return err.Error(), fieldErrors
+	}
+
+	for _, verr := range validationErrors {
+		field := strings.ToLower(verr.Field())
 		var msg string
 
-		switch err.Tag() {
+		switch verr.Tag() {
 		case "required":
 			msg = "is required"
 		case "min":
-			if err.Type().Kind() == reflect.String {
-				msg = fmt.Sprintf("must be at least %s characters", err.Param())
+			if verr.Type().Kind() == reflect.String {
+				msg = fmt.Sprintf("must be at least %s characters", verr.Param())
 			} else {
-				msg = fmt.Sprintf("must be at least %s", err.Param())
+				msg = fmt.Sprintf("must be at least %s", verr.Param())
 			}
 		case "max":
-			if err.Type().Kind() == reflect.String {
-				msg = fmt.Sprintf("must not exceed %s characters", err.Param())
+			if verr.Type().Kind() == reflect.String {
+				msg = fmt.Sprintf("must not exceed %s characters", verr.Param())
 			} else {
-				msg = fmt.Sprintf("must not exceed %s", err.Param())
+				msg = fmt.Sprintf("must not exceed %s", verr.Param())
 			}
 		case "oneof":
-			msg = fmt.Sprintf("must be one of: %s", err.Param())
+			msg = fmt.Sprintf("must be one of: %s", verr.Param())
 		case "email":
 			msg = "must be a valid email address"
 		case "e164":
@@ -91,15 +98,15 @@ func extractValidationErrors(err error) (string, []errorss.FieldError) {
 		case "dive":
 			msg = "some items are invalid"
 		default:
-			if err.Param() != "" {
-				msg = fmt.Sprintf("%s: %s:%s", field, err.Tag(), err.Param())
+			if verr.Param() != "" {
+				msg = fmt.Sprintf("%s: %s:%s", field, verr.Tag(), verr.Param())
 			} else {
-				msg = fmt.Sprintf("%s: %s", field, err.Tag())
+				msg = fmt.Sprintf("%s: %s", field, verr.Tag())
 			}
 		}
 
 		fieldErrors = append(fieldErrors, errorss.FieldError{
-			Field: strings.ToLower(err.Field()),
+			Field: strings.ToLower(verr.Field()),
 			Error: msg,
 		})
 	}

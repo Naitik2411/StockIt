@@ -8,7 +8,7 @@ import (
 type LeaderboardEntry struct {
 	Rank        int             `json:"rank"`
 	UserID      uuid.UUID       `json:"user_id"`
-	Username    *string         `json:"username"`
+	Username    *string         `json:"username,omitempty"`
 	TotalValue  decimal.Decimal `json:"total_value"`
 	ReturnPct   decimal.Decimal `json:"return_pct"`
 	CashBalance decimal.Decimal `json:"cash_balance"`

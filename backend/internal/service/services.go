@@ -32,7 +32,6 @@ func NewServices(s *server.Server, repos *repository.Repositories) (*Services, e
 			repos.Portfolio,
 			repos.Position,
 			repos.User,
-			portfolioService,
 		),
 	}, nil
 }

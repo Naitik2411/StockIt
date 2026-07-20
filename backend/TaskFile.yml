@@ -53,3 +53,29 @@ tasks:
     - go mod tidy
     - echo 'Verifying dependencies...'
     - go mod verify
+
+  test:
+    desc: run all tests
+    cmds:
+    - go test ./... -count=1
+
+  test:race:
+    desc: run all tests with race detector (requires CGO)
+    cmds:
+    - go test ./... -race -count=1
+
+  test:cache:
+    desc: run cache tests only
+    cmds:
+    - go test ./internal/cache/... -v
+
+  lint:
+    desc: run golangci-lint
+    cmds:
+    - golangci-lint run ./...
+
+  check:
+    desc: run tests and lint
+    cmds:
+    - task: test
+    - task: lint

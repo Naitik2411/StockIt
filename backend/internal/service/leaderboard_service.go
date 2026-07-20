@@ -4,20 +4,21 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/Naitik2411/stockit/internal/model"
 	"github.com/Naitik2411/stockit/internal/repository"
 	"github.com/Naitik2411/stockit/internal/server"
 	"github.com/google/uuid"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/shopspring/decimal"
 )
 
 type LeaderboardService struct {
-	server           *server.Server
-	portfolioRepo    *repository.PortfolioRepository
-	positionRepo     *repository.PositionRepository
-	userRepo         *repository.UserRepository
-	portfolioService *PortfolioService
+	server        *server.Server
+	portfolioRepo *repository.PortfolioRepository
+	positionRepo  *repository.PositionRepository
+	userRepo      *repository.UserRepository
 }
 
 func NewLeaderboardService(
@@ -25,14 +26,12 @@ func NewLeaderboardService(
 	portfolioRepo *repository.PortfolioRepository,
 	positionRepo *repository.PositionRepository,
 	userRepo *repository.UserRepository,
-	portfolioService *PortfolioService,
 ) *LeaderboardService {
 	return &LeaderboardService{
-		server:           s,
-		portfolioRepo:    portfolioRepo,
-		positionRepo:     positionRepo,
-		userRepo:         userRepo,
-		portfolioService: portfolioService,
+		server:        s,
+		portfolioRepo: portfolioRepo,
+		positionRepo:  positionRepo,
+		userRepo:      userRepo,
 	}
 }
 
@@ -111,10 +110,17 @@ func (s *LeaderboardService) getOrCompute(ctx context.Context) ([]model.Leaderbo
 		return cached, nil
 	}
 
+	start := time.Now()
 	entries, err := s.compute(ctx)
 	if err != nil {
 		return nil, err
 	}
+
+	s.server.Logger.Info().
+		Str("operation", "leaderboard_compute").
+		Int("entries", len(entries)).
+		Dur("duration", time.Since(start)).
+		Msg("leaderboard computed")
 
 	ttl := s.server.Config.Integration.LeaderboardCacheTTL
 	if err := s.server.Cache.SetLeaderboard(ctx, entries, ttl); err != nil {
@@ -126,6 +132,10 @@ func (s *LeaderboardService) getOrCompute(ctx context.Context) ([]model.Leaderbo
 }
 
 func (s *LeaderboardService) compute(ctx context.Context) ([]model.LeaderboardEntry, error) {
+	if txn := newrelic.FromContext(ctx); txn != nil {
+		defer txn.StartSegment("leaderboard-compute").End()
+	}
+
 	portfolios, err := s.portfolioRepo.ListAll(ctx)
 	if err != nil {
 		return nil, err

@@ -7,21 +7,23 @@ import (
 
 	"github.com/Naitik2411/stockit/internal/cache"
 	errorss "github.com/Naitik2411/stockit/internal/errors"
+	"github.com/alicebob/miniredis/v2"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+func newTestCache(t *testing.T) (*cache.Cache, *miniredis.Miniredis) {
+	t.Helper()
+	mr := miniredis.RunT(t)
+	client := redis.NewClient(&redis.Options{Addr: mr.Addr()})
+	t.Cleanup(func() { _ = client.Close() })
+	return cache.New(client), mr
+}
+
 func TestSetPriceGetPriceRoundTrip(t *testing.T) {
-	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
-	defer client.Close()
-
+	c, _ := newTestCache(t)
 	ctx := context.Background()
-	require.NoError(t, client.Ping(ctx).Err())
-
-	c := cache.New(client)
-
-	defer client.Del(ctx, "price:AAPL")
 
 	input := cache.StockPrice{
 		Price:     "178.50",
@@ -33,16 +35,14 @@ func TestSetPriceGetPriceRoundTrip(t *testing.T) {
 	require.NoError(t, err)
 
 	got, err := c.GetPrice(ctx, "AAPL")
-
+	require.NoError(t, err)
 	assert.Equal(t, "AAPL", got.Ticker)
 	assert.Equal(t, "178.50", got.Price)
 	assert.Equal(t, "1.25", got.ChangePct)
 }
 
 func TestGetPriceNotFound(t *testing.T) {
-	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
-	defer client.Close()
-	c := cache.New(client)
+	c, _ := newTestCache(t)
 	_, err := c.GetPrice(context.Background(), "DOESNOTEXIST")
 	assert.ErrorIs(t, err, errorss.ErrTickerNotFound)
 }

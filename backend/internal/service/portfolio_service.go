@@ -96,7 +96,7 @@ func (s *PortfolioService) Buy(ctx context.Context, userID uuid.UUID, ticker str
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 
 	newCash := portfolio.CashBalance.Sub(totalCost)
 	if err := s.portfolioRepo.UpdateCash(ctx, tx, portfolio.ID, newCash); err != nil {
@@ -110,7 +110,18 @@ func (s *PortfolioService) Buy(ctx context.Context, userID uuid.UUID, ticker str
 	if err := s.txnRepo.Create(ctx, tx, portfolio.ID, ticker, "BUY", shares, price, totalCost); err != nil {
 		return err
 	}
-	return tx.Commit(ctx)
+	if err := tx.Commit(ctx); err != nil {
+		return err
+	}
+
+	s.server.Logger.Info().
+		Str("operation", "portfolio_buy").
+		Str("user_id", userID.String()).
+		Str("ticker", ticker).
+		Str("shares", shares.String()).
+		Str("price", price.String()).
+		Msg("buy order completed")
+	return nil
 }
 
 func (s *PortfolioService) Sell(ctx context.Context, userID uuid.UUID, ticker string, shareStr string) error {
@@ -144,7 +155,7 @@ func (s *PortfolioService) Sell(ctx context.Context, userID uuid.UUID, ticker st
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 
 	position, err := s.positionRepo.GetByPortfolioAndTicker(ctx, tx, portfolio.ID, ticker)
 	if err != nil {
@@ -177,7 +188,18 @@ func (s *PortfolioService) Sell(ctx context.Context, userID uuid.UUID, ticker st
 	if err := s.txnRepo.Create(ctx, tx, portfolio.ID, ticker, "SELL", shares, price, proceeds); err != nil {
 		return err
 	}
-	return tx.Commit(ctx)
+	if err := tx.Commit(ctx); err != nil {
+		return err
+	}
+
+	s.server.Logger.Info().
+		Str("operation", "portfolio_sell").
+		Str("user_id", userID.String()).
+		Str("ticker", ticker).
+		Str("shares", shares.String()).
+		Str("price", price.String()).
+		Msg("sell order completed")
+	return nil
 }
 
 func (s *PortfolioService) Summary(ctx context.Context, userID uuid.UUID) (*model.PortfolioSummary, error) {
