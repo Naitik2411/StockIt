@@ -56,6 +56,12 @@ type IntegrationConfig struct {
 	LeaderboardCacheTTL int    `koanf:"leaderboard_cache_ttl"`
 	StartingBalance     int    `koanf:"starting_balance"`
 	MarketTimezone      string `koanf:"market_timezone"`
+	SeasonCheckInterval int    `koanf:"season_check_interval"`
+	ELOKFactor          int    `koanf:"elo_k_factor"`
+	ELOStartingRating   int    `koanf:"elo_starting_rating"`
+	DefaultSeasonDays   int    `koanf:"default_season_days"`
+	MaxLeagueMembers    int    `koanf:"max_league_members"`
+	InviteCodeLength    int    `koanf:"invite_code_length"`
 }
 
 type AuthConfig struct {

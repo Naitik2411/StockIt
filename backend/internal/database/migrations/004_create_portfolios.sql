@@ -8,6 +8,8 @@ CREATE TABLE portfolios(
     UNIQUE(user_id, season_id)
 );
 
+
+
 CREATE INDEX idx_portfolios_user_id ON portfolios(user_id);
 ---- create above / drop below ----
 

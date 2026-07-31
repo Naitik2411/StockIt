@@ -12,6 +12,8 @@ type Portfolio struct {
 	UserID      uuid.UUID       `json:"user_id"`
 	CashBalance decimal.Decimal `json:"cash_balance"`
 	SeasonID    string          `json:"season_id"`
+	LeagueID    *uuid.UUID      `json:"league_id,omitempty"`
+	SeasonRefID *uuid.UUID      `json:"season_ref_id,omitempty"`
 	CreatedAt   time.Time       `json:"created_at"`
 }
 
