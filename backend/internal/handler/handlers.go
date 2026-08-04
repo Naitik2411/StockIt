@@ -12,6 +12,7 @@ type Handlers struct {
 	Stock       *StockHandler
 	Portfolio   *PortfolioHandler
 	Leaderboard *LeaderboardHandler
+	League      *LeagueHandler
 }
 
 func NewHandlers(s *server.Server, services *service.Services) *Handlers {
@@ -22,5 +23,6 @@ func NewHandlers(s *server.Server, services *service.Services) *Handlers {
 		Stock:       NewStockHandler(s, services.Stock),
 		Portfolio:   NewPortfolioHandler(s, services.Auth, services.Portfolio),
 		Leaderboard: NewLeaderboardHandler(s, services.Auth, services.Leaderboard),
+		League:      NewLeagueHandler(s, services.Auth, services.League),
 	}
 }

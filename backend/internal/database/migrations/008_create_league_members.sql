@@ -1,6 +1,6 @@
 -- Write your migrate up statements here
 CREATE TABLE league_members(
-    id PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     league_id UUID NOT NULL REFERENCES leagues(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     role VARCHAR(10) NOT NULL DEFAULT 'member'

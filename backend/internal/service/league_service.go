@@ -111,6 +111,10 @@ func (s *LeagueService) Create(ctx context.Context, userID uuid.UUID, in CreateL
 		return nil, err
 	}
 
+	if _, err := s.portfolioRepo.CreateLeaguePortfolio(ctx, tx, userID, league.ID, season.ID, starting); err != nil {
+		return nil, err
+	}
+
 	if err := tx.Commit(ctx); err != nil {
 		return nil, err
 	}

@@ -66,6 +66,7 @@ func (h *LeagueHandler) Create(c *echo.Context) error {
 
 	if err != nil {
 		middleware.GetLogger(c).Error().Err(err).Msg("create league failed")
+		return err
 	}
 
 	return c.JSON(http.StatusCreated, map[string]interface{}{
