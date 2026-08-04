@@ -12,6 +12,7 @@ type Services struct {
 	Portfolio   *PortfolioService
 	Leaderboard *LeaderboardService
 	Job         *job.JobService
+	League      *LeagueService
 }
 
 func NewServices(s *server.Server, repos *repository.Repositories) (*Services, error) {
@@ -31,6 +32,13 @@ func NewServices(s *server.Server, repos *repository.Repositories) (*Services, e
 			s,
 			repos.Portfolio,
 			repos.Position,
+			repos.User,
+		),
+		League: NewLeagueService(
+			s,
+			repos.League,
+			repos.Season,
+			repos.Portfolio,
 			repos.User,
 		),
 	}, nil
