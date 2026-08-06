@@ -110,7 +110,15 @@ func (r *PortfolioRepository) CreateLeaguePortfolio(
 		&p.ID, &p.UserID, &p.CashBalance, &p.SeasonID, &p.LeagueID, &p.SeasonRefID, &p.CreatedAt,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("create league portfolio: %w", err)
+		return nil, fmt.Errorf("create lea	gue portfolio: %w", err)
 	}
 	return &p, nil
+}
+
+func (r *PortfolioRepository) DeleteLeaguePortfolios(ctx context.Context, tx pgx.Tx, userID, leagueID uuid.UUID) error {
+	_, err := tx.Exec(ctx, `DELETE FROM portfolios WHERE user_id = $1 AND league_id = $2`)
+	if err != nil {
+		return fmt.Errorf("delete league portfolios : %w", err)
+	}
+	return nil
 }

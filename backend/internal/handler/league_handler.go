@@ -149,3 +149,46 @@ func (h *LeagueHandler) GetMembers(c *echo.Context) error {
 		"data":    members,
 	})
 }
+
+func (h *LeagueHandler) KickMember(c *echo.Context) error {
+	adminID, err := h.resolveUserID(c)
+	if err != nil {
+		return err
+	}
+
+	leagueID, ok := c.Get(middleware.LeagueIDKey).(uuid.UUID)
+	if !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid league id")
+	}
+
+	targetID, err := uuid.Parse(c.Param("userID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid user id")
+	}
+
+	if err := h.leagueService.KickMember(c.Request().Context(), adminID, leagueID, targetID); err != nil {
+		middleware.GetLogger(c).Error().Err(err).Msg("kick member failed")
+		return err
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"success": "true",
+		"data":    map[string]string{"message": "member removed"},
+	})
+}
+
+func (h *LeagueHandler) RegenerateInviteCode(c *echo.Context) error {
+	leagueID, ok := c.Get(middleware.LeagueIDKey).(uuid.UUID)
+	if !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid league id")
+	}
+	league, err := h.leagueService.RegenerateInviteCode(c.Request().Context(), leagueID)
+	if err != nil {
+		middleware.GetLogger(c).Error().Err(err).Msg("regenerate invite code failed")
+		return err
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"success": true,
+		"data":    league,
+	})
+}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ import (
 	"github.com/Naitik2411/stockit/internal/repository"
 	"github.com/Naitik2411/stockit/internal/server"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type LeagueService struct {
@@ -282,4 +284,87 @@ func (s *LeagueService) GetMembers(ctx context.Context, userID, leagueID uuid.UU
 		out = append(out, view)
 	}
 	return out, nil
+}
+
+func (s *LeagueService) GetMemberRole(ctx context.Context, leagueID, userID uuid.UUID) (string, error) {
+	return s.leagueRepo.GetMemberRole(ctx, leagueID, userID)
+}
+
+func (s *LeagueService) KickMember(ctx context.Context, adminID, leagueID, targetID uuid.UUID) error {
+	if adminID == targetID {
+		c := "CANNOT_KICK_ADMIN"
+		return errorss.NewBadRequestError("admin cannot kick themselves", false, &c, nil, nil)
+	}
+
+	role, err := s.leagueRepo.GetMemberRole(ctx, leagueID, targetID)
+	if err != nil {
+		return err
+	}
+
+	if role == "" {
+		c := "MEMBER_NOT_FOUND"
+		return errorss.NewBadRequestError("member not found in this league", false, &c, nil, nil)
+	}
+
+	if role == "admin" {
+		c := "CANNOT_KICK_ADMIN"
+		return errorss.NewBadRequestError("cannot kick a league admin", false, &c, nil, nil)
+	}
+
+	tx, err := s.server.DB.Pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+
+	defer func() { _ = tx.Rollback(ctx) }()
+
+	if err := s.leagueRepo.RemoveMember(ctx, tx, leagueID, targetID); err != nil {
+		return err
+	}
+
+	if err := s.portfolioRepo.DeleteLeaguePortfolios(ctx, tx, targetID, leagueID); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return err
+	}
+
+	s.server.Logger.Info().
+		Str("operation", "league_kick_member").
+		Str("league_id", leagueID.String()).
+		Str("admin_id", adminID.String()).
+		Str("target_user_id", targetID.String()).
+		Msg("member kicked from league")
+
+	return nil
+
+}
+
+func (s *LeagueService) RegenerateInviteCode(ctx context.Context, leagueID uuid.UUID) (*model.League, error) {
+	const maxAttempts = 5
+
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		code, err := lib.GenerateInviteCode()
+		if err != nil {
+			return nil, err
+		}
+		league, err := s.leagueRepo.UpdateInviteCode(ctx, leagueID, code)
+		if err == nil {
+			s.server.Logger.Info().
+				Str("operation", "league_regenerate_invite").
+				Str("league_id", leagueID.String()).
+				Str("invite_code", league.InviteCode).
+				Msg("invite code regenerated")
+			return league, nil
+		}
+
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			continue
+		}
+		return nil, err
+	}
+	return nil, errorss.NewInternalServerError()
+
 }

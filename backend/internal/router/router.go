@@ -51,13 +51,13 @@ func NewRouter(s *server.Server, h *handler.Handlers, services *service.Services
 
 	// register system routes
 	registerSystemRoutes(router, h)
-
+	leagueAdmin := middleware.NewLeagueAdminMiddleware(s, services.Auth, services.League)
 	// register versioned routes
 	v1 := router.Group("/api/v1")
 	registerAuthRoutes(v1, h, middlewares.Auth)
 	registerStockRoutes(v1, h)
 	registerPortfolioRoutes(v1, h, middlewares.Auth)
 	registerLeaderboardRoutes(v1, h, middlewares.Auth)
-	registerLeagueRoutes(v1, h, middlewares.Auth)
+	registerLeagueRoutes(v1, h, middlewares.Auth, *leagueAdmin)
 	return router
 }

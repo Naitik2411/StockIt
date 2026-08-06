@@ -22,6 +22,15 @@ func NewForbiddenError(message string, override bool) *HTTPError {
 	}
 }
 
+func NewForbiddenErrorWithCode(message string, code string) *HTTPError {
+	return &HTTPError{
+		Code:     code,
+		Message:  message,
+		Status:   http.StatusForbidden,
+		Override: false,
+	}
+}
+
 func NewBadRequestError(message string, override bool, code *string, errors []FieldError, action *Action) *HTTPError {
 	formattedCode := MakeUpperCaseWithUnderscores(http.StatusText(http.StatusBadRequest))
 

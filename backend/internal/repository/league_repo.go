@@ -150,3 +150,41 @@ func (r *LeagueRepository) ListMembers(ctx context.Context, leagueID uuid.UUID) 
 	}
 	return members, nil
 }
+
+func (r *LeagueRepository) GetMemberRole(ctx context.Context, leagueID, userID uuid.UUID) (string, error) {
+	var role string
+	err := r.server.DB.Pool.QueryRow(ctx, `SELECT role FROM league_members where league_id = $1 and user_id = $2`, leagueID, userID).Scan(&role)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return "", pgx.ErrNoRows
+		}
+		return "", fmt.Errorf("get member role : %w", err)
+	}
+	return role, nil
+}
+
+func (r *LeagueRepository) RemoveMember(ctx context.Context, tx pgx.Tx, leagueID, userID uuid.UUID) error {
+	tag, err := tx.Exec(ctx, `DELETE FROM league_members WHERE league_id = $1 and user_id = $2`, leagueID, userID)
+	if err != nil {
+		return fmt.Errorf("remove league member:%w", err)
+	}
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("remove league members : no rows")
+	}
+	return nil
+}
+
+func (r *LeagueRepository) UpdateInviteCode(ctx context.Context, leagueID uuid.UUID, code string) (*model.League, error) {
+	query := `
+		UPDATE leagues SET invite_code = $1 WHERE id = $2
+		RETURNING id, name, created_by, invite_code, max_members, is_public, status, created_at
+	`
+	var l model.League
+	err := r.server.DB.Pool.QueryRow(ctx, query, code, leagueID).Scan(
+		&l.ID, &l.Name, &l.CreatedBy, &l.InviteCode, &l.MaxMembers, &l.IsPublic, &l.Status, &l.CreatedAt,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("update invite code: %w", err)
+	}
+	return &l, nil
+}
