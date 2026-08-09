@@ -61,3 +61,39 @@ type LeagueStanding struct {
 	ReturnPct  decimal.Decimal `json:"return_pct"`
 	Rank       int             `json:"rank"`
 }
+
+type SeasonSnapshot struct {
+	ID         uuid.UUID       `json:"id"`
+	SeasonID   uuid.UUID       `json:"season_id"`
+	UserID     uuid.UUID       `json:"user_id"`
+	LeagueID   uuid.UUID       `json:"league_id"`
+	FinalValue decimal.Decimal `json:"final_value"`
+	ReturnPct  decimal.Decimal `json:"return_pct"`
+	Rank       int             `json:"rank"`
+	CreatedAt  time.Time       `json:"created_at"`
+}
+
+// for history responses.
+type SnapshotView struct {
+	SeasonSnapshot
+	Username *string `json:"username,omitempty"`
+}
+
+type CurrentSeason struct {
+	Season
+	DaysRemaining int  `json:"days_remaining"`
+	MemberCount   int  `json:"member_count"`
+	IsExpired     bool `json:"is_expired"`
+}
+
+type SeasonHistoryEntry struct {
+	Season
+	Standings []SnapshotView `json:"standings"`
+}
+
+type SeasonHistoryPage struct {
+	Seasons []SeasonHistoryEntry `json:"seasons"`
+	Page    int                  `json:"page"`
+	Limit   int                  `json:"limit"`
+	Total   int                  `json:"total"`
+}

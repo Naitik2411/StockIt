@@ -10,6 +10,7 @@ type Repositories struct {
 	Transaction *TransactionRepository
 	League      *LeagueRepository
 	Season      *SeasonRepository
+	Snapshot    *SnapshotRepository
 }
 
 func NewRepositories(s *server.Server) *Repositories {
@@ -21,5 +22,6 @@ func NewRepositories(s *server.Server) *Repositories {
 		Transaction: NewTransactionRepository(s),
 		League:      NewLeagueRepository(s),
 		Season:      NewSeasonRepository(s),
+		Snapshot:    NewSnapshotRepository(s),
 	}
 }

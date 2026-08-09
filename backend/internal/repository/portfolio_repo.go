@@ -122,3 +122,24 @@ func (r *PortfolioRepository) DeleteLeaguePortfolios(ctx context.Context, tx pgx
 	}
 	return nil
 }
+
+func (r *PortfolioRepository) ListBySeasonRef(ctx context.Context, seasonRefID uuid.UUID) ([]model.Portfolio, error) {
+	rows, err := r.server.DB.Pool.Query(ctx, `SELECT id, user_id, cash_balance, season_id, league_id, season_ref_id, created_at
+		FROM portfolios
+		WHERE season_ref_id = $1
+		ORDER BY created_at ASC`, seasonRefID)
+	if err != nil {
+		return nil, fmt.Errorf("list portfolio by season ref : %w", err)
+	}
+	defer rows.Close()
+
+	var portfolios []model.Portfolio
+	for rows.Next() {
+		var p model.Portfolio
+		if err := rows.Scan(&p.ID, &p.UserID, &p.CashBalance, &p.SeasonID, &p.LeagueID, &p.SeasonRefID, &p.CreatedAt); err != nil {
+			return nil, fmt.Errorf("scanning portfolios by season ref id : %w", err)
+		}
+		portfolios = append(portfolios, p)
+	}
+	return portfolios, nil
+}
