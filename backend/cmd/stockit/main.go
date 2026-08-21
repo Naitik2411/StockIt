@@ -62,7 +62,8 @@ func main() {
 
 	alphaClient := apiclient.NewAlphaVantageClient(cfg.Integration.AlphaVantageKey)
 	priceWorker := worker.NewPriceSyncWorker(srv, alphaClient, repos.Stock, []string{"AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"}, cfg.Integration.PriceSyncInterval)
-
+	seasonWorker := worker.NewSeasonEndWorker(srv, repos.Season, services.Season, cfg.Integration.SeasonCheckInterval)
+	go seasonWorker.Start(ctx)
 	go priceWorker.Start(ctx)
 
 	srv.SetupHTTPServer(e)

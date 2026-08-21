@@ -102,3 +102,4 @@ func (r *SnapshotRepository) ListByUserID(ctx context.Context, userID []uuid.UUI
 	}
 	return out, nil
 }
+
