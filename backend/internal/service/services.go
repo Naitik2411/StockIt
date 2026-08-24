@@ -14,6 +14,7 @@ type Services struct {
 	Job         *job.JobService
 	League      *LeagueService
 	Season      *SeasonService
+	ELO         *ELOService
 }
 
 func NewServices(s *server.Server, repos *repository.Repositories) (*Services, error) {
@@ -22,6 +23,19 @@ func NewServices(s *server.Server, repos *repository.Repositories) (*Services, e
 		repos.Portfolio,
 		repos.Position,
 		repos.Transaction,
+	)
+
+	eloService := NewELOService(s, repos.ELO, repos.Snapshot, repos.User)
+
+	seasonService := NewSeasonService(
+		s,
+		repos.Season,
+		repos.Snapshot,
+		repos.League,
+		repos.Portfolio,
+		repos.Position,
+		repos.User,
+		eloService,
 	)
 
 	return &Services{
@@ -34,6 +48,7 @@ func NewServices(s *server.Server, repos *repository.Repositories) (*Services, e
 			repos.Portfolio,
 			repos.Position,
 			repos.User,
+			repos.Season,
 		),
 		League: NewLeagueService(
 			s,
@@ -42,14 +57,7 @@ func NewServices(s *server.Server, repos *repository.Repositories) (*Services, e
 			repos.Portfolio,
 			repos.User,
 		),
-		Season: NewSeasonService(
-			s,
-			repos.Season,
-			repos.Snapshot,
-			repos.League,
-			repos.Portfolio,
-			repos.Position,
-			repos.User,
-		),
+		Season: seasonService,
+		ELO:    eloService,
 	}, nil
 }

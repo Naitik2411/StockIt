@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v5"
 )
 
-func registerLeagueRoutes(v1 *echo.Group, h *handler.Handlers, auth *middleware.AuthMiddleware, leagueAdmin middleware.LeagueAdminMiddleware) {
+func registerLeagueRoutes(v1 *echo.Group, h *handler.Handlers, auth *middleware.AuthMiddleware, leagueAdmin *middleware.LeagueAdminMiddleware) {
 	protected := v1.Group("", auth.RequireAuth)
 	protected.POST("/leagues", h.League.Create)
 	protected.GET("/leagues", h.League.ListMine)

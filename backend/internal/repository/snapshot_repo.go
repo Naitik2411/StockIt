@@ -78,7 +78,7 @@ func (r *SnapshotRepository) ListBySeasonIDs(ctx context.Context, seasonIDs []uu
 	return result, nil
 }
 
-func (r *SnapshotRepository) ListByUserID(ctx context.Context, userID []uuid.UUID) ([]model.SeasonSnapshot, error) {
+func (r *SnapshotRepository) ListByUserID(ctx context.Context, userID uuid.UUID) ([]model.SeasonSnapshot, error) {
 	rows, err := r.server.DB.Pool.Query(ctx, `
 		SELECT id, season_id, user_id, league_id, final_value, return_pct, rank, created_at
 		FROM season_snapshots

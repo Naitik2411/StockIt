@@ -97,3 +97,30 @@ type SeasonHistoryPage struct {
 	Limit   int                  `json:"limit"`
 	Total   int                  `json:"total"`
 }
+
+type ELORating struct {
+	UserID        uuid.UUID `json:"user_id"`
+	Rating        int       `json:"rating"`
+	SeasonsPlayed int       `json:"seasons_played"`
+	PeakRating    int       `json:"peak_rating"`
+	LastUpdated   time.Time `json:"last_updated"`
+}
+
+type ELORankingEntry struct {
+	ELORating
+	Rank     int     `json:"rank"`
+	Username *string `json:"username,omitempty"`
+}
+
+type ELORankingPage struct {
+	Entries []ELORankingEntry `json:"entries"`
+	Page    int               `json:"page"`
+	Limit   int               `json:"limit"`
+	Total   int               `json:"total"`
+}
+
+type UserELODetail struct {
+	ELORating
+	Username *string          `json:"username,omitempty"`
+	History  []SeasonSnapshot `json:"history"`
+}

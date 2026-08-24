@@ -13,6 +13,8 @@ type Handlers struct {
 	Portfolio   *PortfolioHandler
 	Leaderboard *LeaderboardHandler
 	League      *LeagueHandler
+	Season      *SeasonHandler
+	Ranking     *RankingHandler
 }
 
 func NewHandlers(s *server.Server, services *service.Services) *Handlers {
@@ -24,5 +26,7 @@ func NewHandlers(s *server.Server, services *service.Services) *Handlers {
 		Portfolio:   NewPortfolioHandler(s, services.Auth, services.Portfolio),
 		Leaderboard: NewLeaderboardHandler(s, services.Auth, services.Leaderboard),
 		League:      NewLeagueHandler(s, services.Auth, services.League),
+		Season:      NewSeasonHandler(s, services.Auth, services.Season),
+		Ranking:     NewRankingHandler(s, services.ELO),
 	}
 }

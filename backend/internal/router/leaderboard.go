@@ -9,7 +9,10 @@ import (
 func registerLeaderboardRoutes(v1 *echo.Group, h *handler.Handlers, auth *middleware.AuthMiddleware) {
 	// Public
 	v1.GET("/leaderboard", h.Leaderboard.Global)
+	v1.GET("/leaderboard/league/:id", h.Leaderboard.League)
+
 	// Protected
 	protected := v1.Group("", auth.RequireAuth)
 	protected.GET("/leaderboard/me", h.Leaderboard.Me)
+	protected.GET("/leaderboard/league/:id/me", h.Leaderboard.LeagueMe)
 }

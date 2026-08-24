@@ -8,6 +8,7 @@ import (
 	"time"
 
 	errorss "github.com/Naitik2411/stockit/internal/errors"
+	"github.com/Naitik2411/stockit/internal/lib"
 	"github.com/Naitik2411/stockit/internal/model"
 	"github.com/Naitik2411/stockit/internal/repository"
 	"github.com/Naitik2411/stockit/internal/server"
@@ -24,6 +25,7 @@ type SeasonService struct {
 	portfolioRepo *repository.PortfolioRepository
 	positionRepo  *repository.PositionRepository
 	userRepo      *repository.UserRepository
+	eloService    *ELOService
 }
 
 func NewSeasonService(
@@ -34,6 +36,7 @@ func NewSeasonService(
 	portfolioRepo *repository.PortfolioRepository,
 	positionRepo *repository.PositionRepository,
 	userRepo *repository.UserRepository,
+	eloService *ELOService,
 ) *SeasonService {
 	return &SeasonService{
 		server:        s,
@@ -43,6 +46,7 @@ func NewSeasonService(
 		portfolioRepo: portfolioRepo,
 		positionRepo:  positionRepo,
 		userRepo:      userRepo,
+		eloService:    eloService,
 	}
 }
 
@@ -232,6 +236,15 @@ func (s *SeasonService) Close(ctx context.Context, seasonID uuid.UUID) error {
 	if err := s.snapshotRepo.CreateBulk(ctx, tx, seasonID, season.LeagueID, rows); err != nil {
 		return err
 	}
+
+	standings := make([]lib.Standing, 0, len(rows))
+	for _, row := range rows {
+		standings = append(standings, lib.Standing{UserID: row.UserID, Rank: row.Rank})
+	}
+	if err := s.eloService.UpdateRatings(ctx, tx, standings); err != nil {
+		return err
+	}
+
 	if err := s.seasonRepo.MarkCompleted(ctx, tx, seasonID); err != nil {
 		return err
 	}

@@ -38,7 +38,7 @@ func newLeaderboardFixture(t *testing.T) (*service.LeaderboardService, *cache.Ca
 		Logger: &nop,
 		Cache:  c,
 	}
-	return service.NewLeaderboardService(srv, nil, nil, nil), c
+	return service.NewLeaderboardService(srv, nil, nil, nil, nil), c
 }
 
 func TestLeaderboardGlobal_Pagination(t *testing.T) {

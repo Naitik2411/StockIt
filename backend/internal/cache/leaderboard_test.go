@@ -47,3 +47,42 @@ func TestGetLeaderboardMiss(t *testing.T) {
 	require.NoError(t, err)
 	assert.Nil(t, got)
 }
+
+func TestLeagueLeaderboardRoundTrip(t *testing.T) {
+	c, _ := newTestCache(t)
+	ctx := context.Background()
+
+	leagueID := uuid.New()
+	seasonID := uuid.New()
+	username := "Naitik"
+	userID := uuid.New()
+	entries := []model.LeaderboardEntry{
+		{
+			Rank:        1,
+			UserID:      userID,
+			Username:    &username,
+			TotalValue:  decimal.NewFromInt(120000),
+			ReturnPct:   decimal.NewFromInt(20),
+			CashBalance: decimal.NewFromInt(60000),
+		},
+	}
+	require.NoError(t, c.SetLeagueLeaderboard(ctx, leagueID, seasonID, entries, 60))
+
+	got, err := c.GetLeagueLeaderboard(ctx, leagueID, seasonID)
+	require.NoError(t, err)
+	require.Len(t, got, 1)
+	assert.Equal(t, 1, got[0].Rank)
+	assert.Equal(t, userID, got[0].UserID)
+	require.NotNil(t, got[0].Username)
+	assert.Equal(t, "Naitik", *got[0].Username)
+	assert.True(t, got[0].TotalValue.Equal(decimal.NewFromInt(120000)))
+	assert.True(t, got[0].ReturnPct.Equal(decimal.NewFromInt(20)))
+	assert.True(t, got[0].CashBalance.Equal(decimal.NewFromInt(60000)))
+}
+
+func TestGetLeagueLeaderboardMiss(t *testing.T) {
+	c, _ := newTestCache(t)
+	got, err := c.GetLeagueLeaderboard(context.Background(), uuid.New(), uuid.New())
+	require.NoError(t, err)
+	assert.Nil(t, got)
+}

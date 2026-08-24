@@ -6,6 +6,7 @@ import (
 
 	"github.com/Naitik2411/stockit/internal/server"
 	"github.com/Naitik2411/stockit/internal/service"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v5"
 )
 
@@ -60,6 +61,58 @@ func (h *LeaderboardHandler) Me(c *echo.Context) error {
 	if err != nil {
 		return err
 	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"success": true,
+		"data":    result,
+	})
+}
+
+func (h *LeaderboardHandler) League(c *echo.Context) error {
+	leagueID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid league id")
+	}
+
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+
+	result, err := h.leaderboardService.League(c.Request().Context(), leagueID, page, limit)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"success": true,
+		"data":    result.Entries,
+		"meta": map[string]interface{}{
+			"page":  result.Page,
+			"limit": result.Limit,
+			"total": result.Total,
+		},
+	})
+}
+
+func (h *LeaderboardHandler) LeagueMe(c *echo.Context) error {
+	leagueID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid league id")
+	}
+
+	clerkUserID, ok := c.Get("user_id").(string)
+	if !ok || clerkUserID == "" {
+		return echo.NewHTTPError(http.StatusUnauthorized, "missing clerk user id")
+	}
+
+	user, err := h.authService.CreateOrGetUser(c.Request().Context(), clerkUserID)
+	if err != nil {
+		return err
+	}
+
+	result, err := h.leaderboardService.LeagueMyRank(c.Request().Context(), leagueID, user.ID)
+	if err != nil {
+		return err
+	}
+
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"success": true,
 		"data":    result,

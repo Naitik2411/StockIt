@@ -58,6 +58,8 @@ func NewRouter(s *server.Server, h *handler.Handlers, services *service.Services
 	registerStockRoutes(v1, h)
 	registerPortfolioRoutes(v1, h, middlewares.Auth)
 	registerLeaderboardRoutes(v1, h, middlewares.Auth)
-	registerLeagueRoutes(v1, h, middlewares.Auth, *leagueAdmin)
+	registerLeagueRoutes(v1, h, middlewares.Auth, leagueAdmin)
+	registerSeasonRoutes(v1, h, middlewares.Auth, leagueAdmin)
+	registerRankingRoutes(v1, h)
 	return router
 }
