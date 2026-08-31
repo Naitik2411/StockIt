@@ -54,14 +54,6 @@ type CreateLeagueResult struct {
 	Season Season `json:"season"`
 }
 
-type LeagueStanding struct {
-	UserID     uuid.UUID       `json:"user_id"`
-	Username   *string         `json:"username,omitempty"`
-	TotalValue decimal.Decimal `json:"total_value"`
-	ReturnPct  decimal.Decimal `json:"return_pct"`
-	Rank       int             `json:"rank"`
-}
-
 type SeasonSnapshot struct {
 	ID         uuid.UUID       `json:"id"`
 	SeasonID   uuid.UUID       `json:"season_id"`

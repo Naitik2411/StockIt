@@ -1,6 +1,8 @@
 -- Write your migrate up statements here
+ALTER TABLE portfolios
+    ALTER COLUMN season_id TYPE VARCHAR(64);
 
 ---- create above / drop below ----
 
--- Write your migrate down statements here. If this migration is irreversible
--- Then delete the separator line above.
+ALTER TABLE portfolios
+    ALTER COLUMN season_id TYPE VARCHAR(20);

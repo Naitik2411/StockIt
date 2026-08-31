@@ -42,7 +42,7 @@ func (r *SnapshotRepository) CreateBulk(ctx context.Context, tx pgx.Tx, seasonID
 	}
 
 	results := tx.SendBatch(ctx, batch)
-	defer results.Close()
+	defer func() { _ = results.Close() }()
 
 	for range rows {
 		if _, err := results.Exec(); err != nil {

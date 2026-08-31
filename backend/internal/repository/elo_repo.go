@@ -76,7 +76,7 @@ func (r *ELORepository) UpsertBulk(
 	}
 
 	results := tx.SendBatch(ctx, batch)
-	defer results.Close()
+	defer func() { _ = results.Close() }()
 
 	for range updates {
 		if _, err := results.Exec(); err != nil {

@@ -122,7 +122,7 @@ func (s *LeagueService) Create(ctx context.Context, userID uuid.UUID, in CreateL
 	}
 
 	s.server.Logger.Info().
-		Str("operation", "leage_create").
+		Str("operation", "league_create").
 		Str("league_id", league.ID.String()).
 		Str("user_id", userID.String()).
 		Str("invite_code", league.InviteCode).

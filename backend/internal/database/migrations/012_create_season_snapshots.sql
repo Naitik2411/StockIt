@@ -6,7 +6,7 @@ CREATE TABLE season_snapshots(
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     league_id UUID NOT NULL REFERENCES leagues(id) ON DELETE CASCADE,
     final_value NUMERIC(20, 6) NOT NULL,
-    return_pct NUMERI(10,4) NOT NULL,
+    return_pct NUMERIC(10,4) NOT NULL,
     rank INT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE(season_id, user_id)
